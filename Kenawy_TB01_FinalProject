@@ -1,0 +1,130 @@
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <algorithm>
+
+class Student {
+public:
+    std::string name;
+    double mathGrade;
+    double englishGrade;
+    double chemistryGrade;
+    double biologyGrade;
+    double historyGrade;
+    double artsGrade;
+    double average;
+    std::string status;
+
+    // Constructor to initialize the student
+    Student(std::string n, double math, double english, double chemistry, double biology, double history, double arts)
+        : name(n), mathGrade(math), englishGrade(english), chemistryGrade(chemistry), biologyGrade(biology), historyGrade(history), artsGrade(arts) {
+        // Assuming the initial status is "Incomplete" until computed
+        status = "INC";
+        computeAverage();
+    }
+
+    // Function to compute the average for the six subjects
+    void computeAverage() {
+        average = (mathGrade + englishGrade + chemistryGrade + biologyGrade + historyGrade + artsGrade) / 6.0;
+        // You can modify this calculation based on your grading system
+        // For simplicity, assuming grades are already in percentage format
+        average = std::min(average, 100.0); // Ensure average is not more than 100
+        status = (average >= 70.0) ? "Pass" : "INC";
+    }
+};
+
+class GradeChecker {
+private:
+    std::vector<Student> students;
+
+public:
+    // Function to add a student and their grades
+    void addStudent() {
+        std::string name;
+        double math, english, chemistry, biology, history, arts;
+
+        std::cout << "Enter Student Name: ";
+        std::getline(std::cin, name);
+
+        std::cout << "Enter Math Grade: ";
+        std::cin >> math;
+
+        std::cout << "Enter English Grade: ";
+        std::cin >> english;
+
+        std::cout << "Enter Chemistry Grade: ";
+        std::cin >> chemistry;
+
+        std::cout << "Enter Biology Grade: ";
+        std::cin >> biology;
+
+        std::cout << "Enter History Grade: ";
+        std::cin >> history;
+
+        std::cout << "Enter Arts Grade: ";
+        std::cin >> arts;
+
+        std::cin.ignore(); // Clear newline from the input buffer
+
+        students.push_back(Student(name, math, english, chemistry, biology, history, arts));
+    }
+
+    // Function to compute the average for each student
+    void computeAverage() {
+        for (auto& student : students) {
+            student.computeAverage();
+        }
+    }
+
+    // Function to sort students based on their average (descending order)
+    void sortStudents() {
+        std::sort(students.begin(), students.end(), [](const Student& a, const Student& b) {
+            return a.average > b.average;
+        });
+    }
+
+    // Function to display all students after entering their grades
+    void displayStudents() {
+        std::cout << std::fixed << std::setprecision(2); // Set precision for floating-point output
+        std::cout << "Student Grades:\n";
+        std::cout << std::setw(20) << std::left << "Name" << std::setw(10) << std::right << "Avg" << std::setw(10) << std::right << "Status\n";
+        std::cout << std::setw(40) << std::setfill('-') << "\n";
+        std::cout << std::setfill(' ');
+
+        for (const auto& student : students) {
+            std::cout << std::setw(20) << std::left << student.name << std::setw(10) << std::right << student.average << std::setw(10) << std::right << student.status << "\n";
+        }
+    }
+
+    // Function to detect students with INC (Incomplete) status
+    void detectINC() {
+        std::cout << "\nStudents with Incomplete Status:\n";
+        for (const auto& student : students) {
+            if (student.status == "INC") {
+                std::cout << "Name: " << student.name << "\n";
+            }
+        }
+    }
+
+    // Function to print a welcome message
+    void printWelcomeMessage() {
+        std::cout << "Welcome to the Class Grade Checker!\n";
+    }
+};
+
+int main() {
+    GradeChecker gradeChecker;
+
+    gradeChecker.printWelcomeMessage();
+
+    // Add students and display their grades
+    for (int i = 0; i < 4; ++i) {
+        gradeChecker.addStudent();
+        gradeChecker.computeAverage();
+        gradeChecker.sortStudents();
+        gradeChecker.displayStudents();
+        gradeChecker.detectINC();
+    }
+
+    return 0;
+}
